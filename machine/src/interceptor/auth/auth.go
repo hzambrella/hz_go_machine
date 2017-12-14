@@ -21,6 +21,7 @@ type UserSession struct {
 
 const (
 	UserSessionKey = "machine_user"
+	ReqPathSessionKey="machine_req_path"
 	loginViewPath  = "/machine/login/view"
 )
 
@@ -39,6 +40,7 @@ func Auth(c *gin.Context)bool {
 		return
 	}
 */
+	
 	userSess, err := GetUserSession(c)
 	if userSess!=nil{
 		fmt.Println("auth:",userSess.Uid)
@@ -52,6 +54,11 @@ func Auth(c *gin.Context)bool {
 			c.String(500, err.Error())
 			return false
 		}else{
+			if err:=SaveUserReqPath(c.Request.URL.Path,c);err!=nil{
+				c.AbortWithError(500, err)
+				c.String(500, err.Error())
+				return false
+			}
 			c.Redirect(302, "/machine/login/view")
 			return false
 		}
@@ -133,6 +140,27 @@ func NeedInterceptor(paths string) (bool, error) {
 	return false, nil
 }
 */
+//用户第一次请求的链接
+func ClearUserReqPath(c *gin.Context){
+	sess := sessions.Default(c)
+	sess.Delete(ReqPathSessionKey)
+}
+
+func GetUserReqPath(c *gin.Context)string{
+	sess := sessions.Default(c)
+	return sess.Get(ReqPathSessionKey).(string)
+
+}
+
+func SaveUserReqPath(path string, c *gin.Context) error {
+	sess := sessions.Default(c)
+	sess.Options(sessions.Options{MaxAge: 7 * 24 * 60 * 60, Path: "/"})
+	sess.Set(ReqPathSessionKey, path)
+	if err:=sess.Save();err!=nil{
+		return err
+	}
+	return nil
+}
 
 func (u *UserSession) GetUid() int64 {
 	return u.Uid

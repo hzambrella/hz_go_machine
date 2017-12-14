@@ -32,7 +32,10 @@ func init() {
 
 // 主页面
 func loginView(c *gin.Context) {
-	c.HTML(200, "machine/login",gin.H{})
+	reqPath:=auth.GetUserReqPath(c)
+	c.HTML(200, "machine/login",gin.H{
+		"reqPath":reqPath,
+	})
 }
 
 func CheckUserByName(c *gin.Context) {

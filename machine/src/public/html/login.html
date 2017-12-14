@@ -24,8 +24,8 @@
             <br>
             <input id="submit" class="submit" type="button" value="登录"></input>
         </form>
-        <input id="uId" type="hidden" value=".id ">
-        <input id="tag" type="hidden" value=".tag ">
+        <input id="reqPath" type="hidden" value="{{.reqPath}}">
+        
         <script type="text/javascript">
             var accountCache = [];
             var accountMes = [];
@@ -90,7 +90,7 @@
 
                 //提交发送ajax
                // var eId = $('#uId').val();
-                //var tag = $('#tag').val();
+                var reqPath = $('#reqPath').val();
                 
                 $("#submit").click(function () {
                     //alert(1)
@@ -142,7 +142,7 @@
                                  return
                             }
                             $("#passwordStatus").html(msg.message);
-                            location.href="/machine/template"
+                            location.replace(reqPath)
                         },
                         error: function (result) {
                             $("#passwordStatus").html(result.responseText);

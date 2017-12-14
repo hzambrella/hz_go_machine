@@ -28,19 +28,26 @@ const (
 func init() {
 	r := gintool.Default()
 	r.GET(userDetailViewPath, userDetailView)
-	r.POST(userDetailDataPath, userDetailData)
-	r.POST(getChildDataPath, getChildData)
+	r.GET(userDetailDataPath, userDetailData)
+	r.GET(getChildDataPath, getChildData)
 	r.POST(updateUserStatusPath, updateUserStatus)
 	r.POST(updateUserBaseInfoPath, updateUserBaseInfo)
 }
 
 // 用户详情页面
 func userDetailView(c *gin.Context) {
+	if !auth.Auth(c){
+		return
+	}
 	c.String(200, "ok")
 }
 
 // 用户详情数据
 func userDetailData(c *gin.Context) {
+	if !auth.Auth(c){
+		return
+	}
+
 	h := gin.H{}
 	uss, err := auth.GetUserSession(c)
 	if err != nil {
@@ -105,6 +112,9 @@ func userDetailData(c *gin.Context) {
 
 //获得子级的数据列表
 func getChildData(c *gin.Context) {
+	if !auth.Auth(c){
+		return
+	}
 
 	h := gin.H{}
 	uss, err := auth.GetUserSession(c)
@@ -162,6 +172,9 @@ func getChildData(c *gin.Context) {
 
 //修改用户状态
 func updateUserStatus(c *gin.Context){
+	if !auth.Auth(c){
+		return
+	}
 	uidStr:=FormValue(c,"userid")
 	uid,err:=strconv.ParseInt(uidStr,10,64)
 	if err!=nil{
@@ -192,6 +205,10 @@ func updateUserStatus(c *gin.Context){
 
 //修改用户信息
 func updateUserBaseInfo(c *gin.Context){
+	if !auth.Auth(c){
+		return
+	}
+
 	uidStr:=FormValue(c,"userid")
 	uid,err:=strconv.ParseInt(uidStr,10,64)
 	if err!=nil{
