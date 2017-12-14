@@ -5,9 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"os"
-	"strings"
-	"tool/inicfg"
+	"fmt"
 	//"tool/redis"
 )
 
@@ -27,7 +25,9 @@ const (
 )
 
 //鉴权
-func Auth(c *gin.Context) {
+//拦截器千万别用r.Use()，放到handler的第一行。
+func Auth(c *gin.Context)bool {
+	/*
 	needAuth, err := NeedInterceptor(c.Request.URL.Path)
 	if err != nil {
 		c.AbortWithError(500, err)
@@ -38,26 +38,32 @@ func Auth(c *gin.Context) {
 		c.Next()
 		return
 	}
-
+*/
 	userSess, err := GetUserSession(c)
+	if userSess!=nil{
+		fmt.Println("auth:",userSess.Uid)
+	}else{
+		fmt.Println("马丹")
+	}
+
 	if err != nil {
 		if err != UserSessNotFound {
 			c.AbortWithError(500, err)
 			c.String(500, err.Error())
-			return
+			return false
+		}else{
+			c.Redirect(302, "/machine/login/view")
+			return false
 		}
-		c.Redirect(302, "/machine/login/view")
-		return
 	}
 
 	if err := setUserSession(userSess, c); err != nil {
 		c.AbortWithError(500, err)
 		c.String(500, err.Error())
-		return
+		return false
 	}
 
-	c.Next()
-	return
+	return true
 }
 
 /*
@@ -78,7 +84,11 @@ func setUserSession(user *UserSession, c *gin.Context) error {
 	if err != nil {
 		return err
 	}
+	sess.Options(sessions.Options{MaxAge: 7 * 24 * 60 * 60, Path: "/"})
 	sess.Set(UserSessionKey, userAuth)
+	if err:=sess.Save();err!=nil{
+		return err
+	}
 	return nil
 }
 
@@ -95,7 +105,7 @@ func GetUserSession(c *gin.Context) (*UserSession, error) {
 	}
 	return userSess, nil
 }
-
+/*
 // 请求是否需要拦截鉴权，在$ETCDIR/intercepotor.ini设置不需拦截的。
 func NeedInterceptor(paths string) (bool, error) {
 	_, err := os.Stat(os.Getenv("ETCDIR") + "/interceptor.ini")
@@ -122,6 +132,7 @@ func NeedInterceptor(paths string) (bool, error) {
 
 	return false, nil
 }
+*/
 
 func (u *UserSession) GetUid() int64 {
 	return u.Uid

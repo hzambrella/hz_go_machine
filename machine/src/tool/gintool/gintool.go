@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"html/template"
-	"interceptor/auth"
 	"sync"
 	//"tool/inicfg"
 )
@@ -51,7 +50,7 @@ func Default() *gin.Engine {
 
 		
 		defaultE.Use(sessions.Sessions("machine_user_cookie", store_cookie))
-		defaultE.Use(auth.Auth)
+		//defaultE.Use(auth.Auth)
 		// cookie session
 	}
 	return defaultE

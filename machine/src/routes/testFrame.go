@@ -34,7 +34,10 @@ func testJSON(c *gin.Context) {
 }
 
 func testTemplate(c *gin.Context) {
-
+	if !auth.Auth(c){
+		return
+	}
+	
 	userSess, err := auth.GetUserSession(c)
 	if err != nil {
 		c.String(500, err.Error())

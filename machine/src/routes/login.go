@@ -53,6 +53,7 @@ func CheckUserByName(c *gin.Context) {
 
 	isPass, err = db.CheckUserByName(userName)
 	if err != nil {
+		//无效用户名
 		h["isValid"] = false
 		switch err {
 		case user.UserDataNotFound:
@@ -102,7 +103,10 @@ func CheckUserByPass(c *gin.Context) {
 	h := gin.H{}
 
 	if err != nil {
+		//无效用户名
 		h["isValid"] = false
+		//无效密码
+		h["wrongPass"]=false
 		switch err {
 		case user.UserDataNotFound:
 			h["message"] = user.NotFoundMes
@@ -110,6 +114,10 @@ func CheckUserByPass(c *gin.Context) {
 			h["message"] = user.FrozenMes
 		case user.UserChecking:
 			h["message"] = user.CheckingMes
+		case user.UserWrongPass:
+			h["message"]=user.WrongPassMes
+			h["isValid"] = true
+			h["wrongPass"]=true
 		default:
 			fmt.Println(err)
 			c.String(500,sysWrong)
@@ -125,7 +133,15 @@ func CheckUserByPass(c *gin.Context) {
 			c.String(500,sysWrong)
 			return
 		}
-		h["message"] = "用户有效"
+		u,err:=auth.GetUserSession(c)
+		if err!=nil{
+			fmt.Println(err)
+			c.String(500,sysWrong)
+			return
+		}
+
+		fmt.Println("user_id:",u.Uid)
+		h["message"] = "密码正确"
 		h["isValid"] = true
 		c.JSON(200, h)
 		return

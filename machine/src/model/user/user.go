@@ -54,6 +54,7 @@ const (
 	FrozenMes   = "您的账户已被冻结"
 	CheckingMes = "您的账户正在审核"
 	NotFoundMes = "用户不存在"
+	WrongPassMes="密码错误" 
 )
 
 //校验用户状态
