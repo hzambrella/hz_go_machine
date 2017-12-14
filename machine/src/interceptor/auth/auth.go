@@ -11,13 +11,14 @@ import (
 	//"tool/redis"
 )
 
+//鉴权拦截器
 var UserSessNotFound = errors.New("user not found")
 
 //用户信息
 type UserSession struct {
 	//uid_auth
 	//AuthType string `json:"auth_type"`
-	Uid int `json:"uid"`
+	Uid int64 `json:"uid"`
 }
 
 const (
@@ -66,9 +67,9 @@ func isLogin(c *gin.Context)bool{
 }
 */
 // 设置会话
-func SetUserSession(uid int,c *gin.Context)error{
-	uss:=&UserSession{Uid:uid}
-	return setUserSession(uss,c)
+func SetUserSession(uid int64, c *gin.Context) error {
+	uss := &UserSession{Uid: uid}
+	return setUserSession(uss, c)
 }
 
 func setUserSession(user *UserSession, c *gin.Context) error {
@@ -95,8 +96,15 @@ func GetUserSession(c *gin.Context) (*UserSession, error) {
 	return userSess, nil
 }
 
-// 请求是否需要拦截鉴权
+// 请求是否需要拦截鉴权，在$ETCDIR/intercepotor.ini设置不需拦截的。
 func NeedInterceptor(paths string) (bool, error) {
+	_, err := os.Stat(os.Getenv("ETCDIR") + "/interceptor.ini")
+	if err != nil {
+		if os.IsNotExist(err) {
+			return true, errors.New(os.Getenv("ETCDIR") + "/interceptor.ini not found")
+		}
+	}
+
 	mapExclude, err := inicfg.Getcfg().GetSection("intercetor_exclude")
 	if err != nil {
 		return true, err
@@ -115,6 +123,6 @@ func NeedInterceptor(paths string) (bool, error) {
 	return false, nil
 }
 
-func (u *UserSession)GetUid()int{
+func (u *UserSession) GetUid() int64 {
 	return u.Uid
 }

@@ -1,0 +1,105 @@
+{{define "machine/login"}}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>用户登录</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/common.css">
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="content">
+        <p class="title">登录</p>
+        <form>
+            账 号：
+            <input type="text" id="account" autofocus required></input><span id="accountStatus"></span>
+            <br>
+            <br> 密 码：
+            <input type="password" id="password" required></input><span id="passwordStatus"></span>
+            <br>
+            <br>
+            <input id="submit" class="submit" type="submit" value="登录"></input>
+        </form>
+        <input id="uId" type="hidden" value=".id ">
+        <input id="tag" type="hidden" value=".tag ">
+        <script type="text/javascript">
+        $(document).ready(function() {
+            //帐号失去焦点发送ajax，验证帐号是否存在
+            $("#account").blur(function(event) {
+                account=$("#account").val()
+                if (account==""){
+                    $("#accountStatus").html("请输入用户名")
+                    return
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/machine/check/user",
+                    data:{
+                        "userName":account
+                    },
+                    success: function(msg) {
+                        //alert(JSON.stringify(msg))
+                        $("#accountStatus").html(msg.message);
+                    },
+                    error: function(result) {
+
+                    	 $("#accountStatus").html(result.responseText);
+                        // alert("帐号查询发生错误");
+                    },
+                });
+            });
+            //密码失去焦点发送ajax，验证密码是否匹配帐号
+            $("#password").blur(function(event) {
+                 account=$("#account").val()
+                 password=$("#password").val()
+                $.ajax({
+                    type: "POST",
+                    url: "/machine/check/pass",
+
+                    data:{
+                        userName:account,
+                        password:password,
+                    },
+                    success: function(msg) {
+                        $("#passwordStatus").html(msg.message);
+                    },
+                    error: function(result) {
+                    	 $("#passwordStatus").html(result);
+                        // alert("密码查询发生错误");
+                    },
+                });
+            });
+            //提交发送ajax
+            var eId = $('#uId').val();
+            var tag = $('#tag').val();
+            $("#submit").click(function() {
+                alert(1)
+                /*
+                $.ajax({
+                    type: "POST",
+                    url: "",
+                    dataType: "json",
+                    data: {
+                        id: eId
+                    },
+                    success: function(data) {
+
+                    },
+                    error: function(result) {
+
+                    },
+                });
+                */
+            });
+        });
+        </script>
+    </div>
+</body>
+
+</html>
+{{end}}

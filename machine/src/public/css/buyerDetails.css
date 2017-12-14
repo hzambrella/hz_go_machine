@@ -1,0 +1,39 @@
+.content {
+    position: relative;
+    height: 100%;
+    margin: 3vw;
+}
+
+.content .title {
+    position: relative;
+    line-height: 3rem;
+    text-align: center;
+}
+
+.content .title p {
+    font-size: 1.5rem;
+}
+
+.content .form{
+	padding: 3vw;
+}
+.content .row {
+    height: 3rem;
+    line-height: 3rem;
+    font-size: 1.2rem;
+    // text-align: center;
+}
+.content .confirm{
+	position:relative;
+	width:25vw;
+	height:8vw;
+	line-height:8vw;
+	margin:auto;
+	border-radius: 10px;
+	border: 1px solid;
+}
+
+.content .confirm p{
+	font-size:1rem;
+	text-align:center;
+}
